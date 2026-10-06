@@ -83,6 +83,7 @@ flowchart TD
 
 ## 📚 Workshop Playbook, Decks & Documentation (`docs/`)
 
+* **[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)** — Full 5-Layer System & Zero-Trust Cloud Architecture, Execution Sequence Diagram, Resource Specifications, REST API Contracts, Defense-in-Depth Security Matrix (`WAF-1000`, `WAF-1100`, `WAF-5000`, `SEC-01`–`SEC-05`), and `go/genarch` Schema.
 * **[`docs/vibe_coding_finops_workshop_playbook.md`](docs/vibe_coding_finops_workshop_playbook.md)** — Complete 3-Hour (4-Sprint) Antigravity Vibe Coding Master Workshop Syllabus, 22-Slide Presenter Script, Copy-Paste Prompts, and Instructor Troubleshooting Cheat Sheet.
 * **[`docs/attendee_quickstart_handout.md`](docs/attendee_quickstart_handout.md)** — Attendee Quickstart Handout with the 4 sequential Vibe Coding prompts + Sprint 5 Zero-Trust Cloud Run & Cloud Armor deployment prompt.
 * **[`docs/finops_deployment_security_validation_report.md`](docs/finops_deployment_security_validation_report.md)** — Full Infrastructure & Codebase Security Audit (`SEC-01` through `SEC-05`), Cloud Armor WAF verification (`SQLi`/`XSS` `HTTP 403`), and functional validation report.
