@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Cloud FinOps Hub | Cloud Billing & Cost Optimization</title>
+  
+  <!-- Security Headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://*.googleapis.com;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  
+  <!-- Chart.js for High Performance Data Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  
+  <!-- Google Cloud Console Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    
+    <!-- =============================================================
+         Google Cloud Console Top Navigation Bar
+         ============================================================= -->
+    <header class="cloud-header">
+      <div class="header-left">
+        <button class="nav-toggle-btn" id="sidebarToggleBtn" title="Toggle Navigation Menu" aria-label="Toggle Navigation Menu">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <a href="#overview" class="cloud-brand" id="brandHomeLink">
+          <!-- Google Cloud SVG Icon -->
+          <svg class="cloud-logo-svg" viewBox="0 0 24 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19.35 8.04C18.67 4.59 15.64 2 12 2C9.11 2 6.6 3.64 5.35 6.04C2.34 6.36 0 8.91 0 12C0 15.31 2.69 18 6 18H19C21.76 18 24 15.76 24 13C24 10.36 21.95 8.22 19.35 8.04Z" fill="#4285F4"/>
+            <path d="M19 18H6C2.69 18 0 15.31 0 12C0 8.91 2.34 6.36 5.35 6.04C5.46 6.03 5.56 6.02 5.67 6.02L8.23 10.45L12 18H19Z" fill="#34A853" opacity="0.8"/>
+            <path d="M19.35 8.04C18.67 4.59 15.64 2 12 2C10.74 2 9.56 2.39 8.57 3.06L11.5 8.5H19.35Z" fill="#EA4335" opacity="0.8"/>
+            <path d="M12 2C12.87 2 13.7 2.19 14.46 2.53L10.5 9.5L8.57 3.06C9.56 2.39 10.74 2 12 2Z" fill="#FBBC04" opacity="0.9"/>
+          </svg>
+          <span class="brand-text">Google Cloud</span>
+          <span class="brand-subtext">FinOps Hub</span>
+        </a>
+
+        <!-- Cloud Project & Organization Selector Dropdown -->
+        <div class="project-selector-wrapper" style="position: relative;">
+          <div class="project-selector" id="projectSelectorBtn" title="Switch Cloud Organization / Project (Click to select by Project Name or ID)" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+            <span class="material-symbols-outlined project-badge" id="activeProjectIcon">folder_shared</span>
+            <span id="activeProjectLabel">Multiple Projects (5 Selected)</span>
+            <span class="material-symbols-outlined" style="font-size: 16px;">arrow_drop_down</span>
+          </div>
+
+          <!-- Rich Google Cloud Project & Organization Picker Menu -->
+          <div id="projectPickerDropdown" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; width: 430px; max-height: 480px; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,0.22); z-index: 2000; overflow: hidden; flex-direction: column;">
+            <div style="padding: 12px 14px; border-bottom: 1px solid var(--border-color); background: var(--bg-surface-alt);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-size: 12px; font-weight: 700; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.4px;">Select Cloud Project or Organization</span>
+                <span style="font-size: 11px; color: var(--google-blue); font-weight: 600;">Argolis Directory</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 10px;">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--text-secondary);">search</span>
+                <input type="text" id="projectPickerSearchInput" placeholder="Filter by project name or ID (e.g. FinOps Hub, GKE, Data Warehouse)..." style="border: none; background: transparent; color: var(--text-primary); font-size: 12px; width: 100%; outline: none;" />
+              </div>
+            </div>
+            <div id="projectPickerList" style="overflow-y: auto; max-height: 360px; padding: 6px;">
+              <!-- Dynamically populated by app.js with Project Names, IDs, Environments, and Monthly Spend -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Global Search -->
+      <div class="header-center">
+        <div class="search-box">
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" id="globalSearchInput" class="search-input" placeholder="Search resources, billing SKUs, recommendations, queries (/)" />
+          <kbd class="search-kbd">/</kbd>
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="header-right">
+        <!-- Prominent White View & Night View Segmented Switch -->
+        <div class="theme-switch-segmented" id="themeSegmentedSwitch" role="group" aria-label="Night and White View Switcher">
+          <button type="button" class="theme-segment-btn" id="btnWhiteView" title="Switch to White (Light) View">
+            <span class="material-symbols-outlined">light_mode</span>
+            <span>White View</span>
+          </button>
+          <button type="button" class="theme-segment-btn" id="btnNightView" title="Switch to Night (Dark) View">
+            <span class="material-symbols-outlined">dark_mode</span>
+            <span>Night View</span>
+          </button>
+        </div>
+
+        <!-- Gemini Copilot Trigger -->
+        <button class="icon-btn gemini-sparkle" id="topGeminiBtn" title="Gemini Cloud FinOps Assistant">
+          <span class="material-symbols-outlined">auto_awesome</span>
+        </button>
+
+        <!-- Notifications -->
+        <button class="icon-btn" id="notificationsBtn" title="Cost & Budget Notifications">
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="badge-dot"></span>
+        </button>
+
+        <!-- Help & Docs -->
+        <button class="icon-btn" id="helpDocsBtn" title="Google Cloud FinOps Documentation">
+          <span class="material-symbols-outlined">help_outline</span>
+        </button>
+
+        <!-- User Profile Avatar -->
+        <button class="user-avatar-btn" id="userProfileBtn" title="Account: admin@imedtra.altostrat.com (argolis-finops-hub-14419)">
+          IM
+        </button>
+      </div>
+    </header>
+
+    <!-- =============================================================
+         App Body (Navigation Rail + Workspace)
+         ============================================================= -->
+    <div class="app-body">
+      
+      <!-- Collapsible Sidebar Drawer -->
+      <aside class="cloud-sidebar" id="cloudSidebar">
+        <nav class="sidebar-nav">
+          <div class="nav-section-title">Cost Management</div>
+          <a href="#overview" class="nav-link active" data-tab="overview">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="nav-link-text">Overview</span>
+          </a>
+          <a href="#breakdown" class="nav-link" data-tab="breakdown">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span class="nav-link-text">Cost Breakdown</span>
+          </a>
+          <a href="#recommender" class="nav-link" data-tab="recommender">
+            <span class="material-symbols-outlined">savings</span>
+            <span class="nav-link-text">Recommender</span>
+            <span class="nav-counter" id="recBadgeCount">8</span>
+          </a>
+          <a href="#budgets" class="nav-link" data-tab="budgets">
+            <span class="material-symbols-outlined">account_balance_wallet</span>
+            <span class="nav-link-text">Budgets & Alerts</span>
+          </a>
+
+          <div class="nav-section-title">Intelligence & Analytics</div>
+          <a href="#bigquery" class="nav-link" data-tab="bigquery">
+            <span class="material-symbols-outlined">database</span>
+            <span class="nav-link-text">BigQuery SQL Studio</span>
+          </a>
+          <a href="#copilot" class="nav-link" data-tab="copilot">
+            <span class="material-symbols-outlined">auto_awesome</span>
+            <span class="nav-link-text">Gemini Copilot</span>
+          </a>
+
+          <div class="nav-section-title">Administration</div>
+          <a href="#settings" class="nav-link" data-tab="settings">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="nav-link-text">Settings & Exports</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer-info">
+          <div>GCP Billing Export: <strong id="sidebarBqStatus">Live (Argolis)</strong></div>
+          <div style="font-size: 10px; margin-top: 2px;" id="sidebarDatasetName">argolis-finops-hub-14419.finops_billing_analytics</div>
+        </div>
+      </aside>
+
+      <!-- Main Workspace Scrollable Area -->
+      <main class="workspace-main">
+        
+        <!-- Page Action Subheader Toolbar -->
+        <section class="page-toolbar">
+          <div class="page-title-group">
+            <h1 class="page-title" id="pageTitleText">FinOps Overview</h1>
+            <span class="page-chip" id="liveStatusChip">
+              <span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span>
+              <span>Vertex AI &amp; BigQuery Connected</span>
+            </span>
+          </div>
+
+          <div class="toolbar-controls">
+            <!-- Consumption Scope Selector (Single Project / Multiple Selected Projects / Entire Organization) -->
+            <select class="filter-select" id="scopeSelect" title="Select Granular Consumption Scope (Single Project, Multiple Selected Projects, or Entire Organization)" style="font-weight: 600; border-color: var(--google-blue);">
+              <option value="multi" selected>📁 Scope: Multiple Selected Projects (5)</option>
+              <option value="single">📄 Scope: Single Project</option>
+              <option value="org">🌐 Scope: Entire Organization (45+ Projects)</option>
+            </select>
+
+            <!-- BigQuery Billing Export File/Table Selector -->
+            <select class="filter-select" id="bqExportTableSelect" title="Select BigQuery Billing Export Table or File" style="font-weight: 500;">
+              <option value="gcp_billing_export_v1" selected>📊 BQ Export: gcp_billing_export_v1 (Standard)</option>
+              <option value="gcp_billing_export_resource_v1">🏷️ BQ Export: gcp_billing_export_resource_v1 (Detailed Resource)</option>
+              <option value="gcp_billing_export_pricing_v1">💲 BQ Export: gcp_billing_export_pricing_v1 (Pricing Catalog)</option>
+            </select>
+
+            <!-- Upload / Select Specific BigQuery Export File (.csv / .json) -->
+            <input type="file" id="bqExportFileInput" accept=".csv,.json" style="display: none;" />
+            <button type="button" class="btn-gcp btn-gcp-subtle" id="uploadBqExportBtn" title="Select a local BigQuery Export File (.csv or .json)" style="border: 1px dashed var(--google-blue);">
+              <span class="material-symbols-outlined" style="font-size: 16px;">upload_file</span>
+              <span id="uploadBqExportBtnLabel">Select BQ File</span>
+            </button>
+
+            <!-- Date Range Selector -->
+            <select class="filter-select" id="dateRangeSelect" title="Select Analysis Date Range">
+              <option value="7">Last 7 Days</option>
+              <option value="30" selected>Last 30 Days (Current Month)</option>
+              <option value="90">Last Quarter (90 Days)</option>
+              <option value="365">Year-to-Date (YTD)</option>
+            </select>
+
+            <!-- Environment Filter -->
+            <select class="filter-select" id="envFilterSelect" title="Filter by Environment Tag">
+              <option value="all" selected>All Environments</option>
+              <option value="prod">Production</option>
+              <option value="staging">Staging</option>
+              <option value="dev">Development</option>
+            </select>
+
+            <!-- Project Filter -->
+            <select class="filter-select" id="projectFilterSelect" title="Filter by Cloud Project Name or Organization">
+              <option value="all" selected>📁 All Scoped Projects (5 Active)</option>
+              <option value="org">🌐 Entire Organization — Argolis FinOps Org (45+ Projects)</option>
+              <option value="argolis-finops-hub-14419">⭐ Argolis FinOps Hub (argolis-finops-hub-14419)</option>
+              <option value="htr-prod-service">🚀 HTR Core Production Service (htr-prod-service)</option>
+              <option value="htr-k8s-cluster">☸️ HTR GKE Kubernetes Platform (htr-k8s-cluster)</option>
+              <option value="htr-data-warehouse">🗄️ HTR Enterprise Data Warehouse (htr-data-warehouse)</option>
+              <option value="htr-analytics-prod">📊 HTR BigQuery Analytics Prod (htr-analytics-prod)</option>
+              <option value="htr-dev-service">🧪 HTR Developer Sandbox (htr-dev-service)</option>
+            </select>
+
+            <!-- Generate Report Button -->
+            <button class="btn-gcp btn-gcp-secondary" id="exportReportBtn">
+              <span class="material-symbols-outlined">file_download</span>
+              <span>Export CSV</span>
+            </button>
+
+            <!-- Quick Action: Ask Gemini -->
+            <button class="btn-gcp btn-gcp-primary" id="openGeminiActionBtn">
+              <span class="material-symbols-outlined" style="font-size: 16px;">auto_awesome</span>
+              <span>Ask Gemini</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Granular Consumption Scope & Multi-Project Interactive Filter Bar -->
+        <section id="multiProjectSelectorBar" style="background: var(--bg-surface); border-bottom: 1px solid var(--border-color); padding: 8px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 12px;">
+          <span style="font-weight: 600; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 4px;">
+            <span class="material-symbols-outlined" style="font-size: 15px; color: var(--google-blue);">tune</span>
+            <span id="scopeModeTitle">Granular Consumption Scope (Multiple Projects):</span>
+          </span>
+          <div id="multiProjectCheckboxes" style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <label class="code-pill" style="cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px;" title="Project ID: argolis-finops-hub-14419">
+              <input type="checkbox" class="proj-scope-cb" value="argolis-finops-hub-14419" checked />
+              <span><strong>Argolis FinOps Hub</strong> <small style="opacity:0.75;">(argolis-finops-hub-14419)</small></span>
+            </label>
+            <label class="code-pill" style="cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px;" title="Project ID: htr-prod-service">
+              <input type="checkbox" class="proj-scope-cb" value="htr-prod-service" checked />
+              <span><strong>HTR Core Production</strong> <small style="opacity:0.75;">(htr-prod-service)</small></span>
+            </label>
+            <label class="code-pill" style="cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px;" title="Project ID: htr-k8s-cluster">
+              <input type="checkbox" class="proj-scope-cb" value="htr-k8s-cluster" checked />
+              <span><strong>HTR GKE Platform</strong> <small style="opacity:0.75;">(htr-k8s-cluster)</small></span>
+            </label>
+            <label class="code-pill" style="cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px;" title="Project ID: htr-data-warehouse">
+              <input type="checkbox" class="proj-scope-cb" value="htr-data-warehouse" checked />
+              <span><strong>HTR Data Warehouse</strong> <small style="opacity:0.75;">(htr-data-warehouse)</small></span>
+            </label>
+            <label class="code-pill" style="cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px;" title="Project ID: htr-analytics-prod">
+              <input type="checkbox" class="proj-scope-cb" value="htr-analytics-prod" checked />
+              <span><strong>HTR Analytics Prod</strong> <small style="opacity:0.75;">(htr-analytics-prod)</small></span>
+            </label>
+            <label class="code-pill" style="cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px;" title="Project ID: htr-dev-service">
+              <input type="checkbox" class="proj-scope-cb" value="htr-dev-service" />
+              <span><strong>HTR Dev Sandbox</strong> <small style="opacity:0.75;">(htr-dev-service)</small></span>
+            </label>
+          </div>
+          <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+            <button type="button" class="btn-gcp btn-gcp-subtle" id="selectAllProjectsBtn" style="height: 24px; padding: 0 8px; font-size: 11px;">Select All</button>
+            <span style="color: var(--text-tertiary);">|</span>
+            <span>Active BQ Export: <code id="activeBqExportIndicator">argolis-finops-hub-14419.finops_billing_analytics.gcp_billing_export_v1</code></span>
+          </div>
+        </section>
+
+        <!-- Main Views Container -->
+        <div class="page-container">
+
+          <!-- =========================================================
+               VIEW 1: OVERVIEW
+               ========================================================= -->
+          <section class="view-section active" id="view-overview">
+            
+            <!-- Summary KPI Metric Cards -->
+            <div class="kpi-row">
+              <!-- KPI 1 -->
+              <div class="kpi-card">
+                <div class="kpi-header">
+                  <span class="kpi-title" id="kpiMtdTitle">Month-to-Date Spend</span>
+                  <div class="kpi-icon blue">
+                    <span class="material-symbols-outlined">payments</span>
+                  </div>
+                </div>
+                <div class="kpi-value" id="kpiMtdSpend">$14,290.50</div>
+                <div class="kpi-meta">
+                  <span class="trend-indicator up-bad" id="kpiSpendTrend">
+                    <span class="material-symbols-outlined" style="font-size: 15px;">trending_up</span> +4.2%
+                  </span>
+                  <span id="kpiSpendSubtext">vs. previous 30 days (5 Projects)</span>
+                </div>
+              </div>
+
+              <!-- KPI 2 -->
+              <div class="kpi-card">
+                <div class="kpi-header">
+                  <span class="kpi-title">Month-End Forecast</span>
+                  <div class="kpi-icon purple">
+                    <span class="material-symbols-outlined">insights</span>
+                  </div>
+                </div>
+                <div class="kpi-value" id="kpiForecastSpend">$15,420.00</div>
+                <div class="kpi-meta">
+                  <span class="trend-indicator down-good" id="kpiForecastMetaBadge">
+                    <span class="material-symbols-outlined" style="font-size: 15px;">check</span> 85.7% of budget
+                  </span>
+                  <span id="kpiForecastThresholdText">($18,000 threshold)</span>
+                </div>
+                <div class="kpi-progress">
+                  <div class="kpi-progress-fill" id="kpiForecastProgressFill" style="width: 85.7%; background-color: var(--google-blue);"></div>
+                </div>
+              </div>
+
+              <!-- KPI 3 -->
+              <div class="kpi-card">
+                <div class="kpi-header">
+                  <span class="kpi-title">Potential Recommender Savings</span>
+                  <div class="kpi-icon green">
+                    <span class="material-symbols-outlined">savings</span>
+                  </div>
+                </div>
+                <div class="kpi-value" id="kpiSavingsVal" style="color: var(--google-green);">$3,180.50<span style="font-size: 14px; font-weight: normal; color: var(--text-secondary);">/mo</span></div>
+                <div class="kpi-meta">
+                  <span class="trend-indicator down-good" id="kpiRecCountText">8 recommendations ready</span>
+                </div>
+              </div>
+
+              <!-- KPI 4 -->
+              <div class="kpi-card">
+                <div class="kpi-header">
+                  <span class="kpi-title">FinOps Cloud Health Score</span>
+                  <div class="kpi-icon yellow">
+                    <span class="material-symbols-outlined">verified</span>
+                  </div>
+                </div>
+                <div class="kpi-value" id="kpiHealthScore">88%</div>
+                <div class="kpi-meta">
+                  <span class="trend-indicator down-good" id="kpiHealthMetaBadge">+4 pts</span>
+                  <span id="kpiHealthMetaText">94% resources tagged with env/team</span>
+                </div>
+                <div class="kpi-progress">
+                  <div class="kpi-progress-fill" id="kpiHealthProgressFill" style="width: 88%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid-2col">
+              <!-- Spend Trend Over Time -->
+              <div class="card-gcp">
+                <div class="card-gcp-header">
+                  <div class="card-gcp-title">
+                    <span class="material-symbols-outlined" style="color: var(--google-blue);">show_chart</span>
+                    <span>Daily Cost Trend</span>
+                    <span class="card-gcp-subtitle" id="chartDateSubtitle">(Jul 26 - Aug 25, 2026)</span>
+                  </div>
+                  <div>
+                    <button class="btn-gcp btn-gcp-subtle" id="toggleStackedViewBtn">
+                      <span class="material-symbols-outlined">bar_chart</span>
+                      <span id="chartModeLabel">Switch to Stacked</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="card-gcp-body">
+                  <div class="chart-container-box">
+                    <canvas id="costTrendChartCanvas"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Service Cost Share -->
+              <div class="card-gcp">
+                <div class="card-gcp-header">
+                  <div class="card-gcp-title">
+                    <span class="material-symbols-outlined" style="color: var(--google-purple);">pie_chart</span>
+                    <span>Cost by Cloud Service</span>
+                  </div>
+                </div>
+                <div class="card-gcp-body">
+                  <div class="chart-container-box" style="height: 230px;">
+                    <canvas id="serviceShareChartCanvas"></canvas>
+                  </div>
+                  <div class="chart-legend-custom" id="serviceShareLegend"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Anomaly & Priority Recommendations Banner -->
+            <div class="grid-equal-2col">
+              <!-- High Impact Recommendations Quick List -->
+              <div class="card-gcp">
+                <div class="card-gcp-header">
+                  <div class="card-gcp-title">
+                    <span class="material-symbols-outlined" style="color: var(--google-green);">bolt</span>
+                    <span>Top Priority Recommender Actions</span>
+                  </div>
+                  <a href="#recommender" class="btn-gcp btn-gcp-subtle nav-link-trigger" data-target-tab="recommender">
+                    <span>View All (12)</span>
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                  </a>
+                </div>
+                <div class="card-gcp-body" style="padding: 12px 18px;">
+                  <div style="display: flex; flex-direction: column; gap: 10px;" id="overviewQuickRecList">
+                    <!-- Dynamic Quick Recommendations injected by app.js -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- FinOps Best Practices Checklist -->
+              <div class="card-gcp">
+                <div class="card-gcp-header">
+                  <div class="card-gcp-title">
+                    <span class="material-symbols-outlined" style="color: var(--google-blue);">task_alt</span>
+                    <span>FinOps Maturity & Compliance</span>
+                  </div>
+                  <span class="status-pill success">Score: 88/100</span>
+                </div>
+                <div class="card-gcp-body">
+                  <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <span class="material-symbols-outlined" style="color: var(--google-green); font-size: 18px;">check_circle</span>
+                      <div style="flex: 1;">
+                        <strong>BigQuery Detailed Billing Export enabled</strong>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Dataset: <code>htr-billing-analytics.gcp_billing_export_v1</code></div>
+                      </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <span class="material-symbols-outlined" style="color: var(--google-green); font-size: 18px;">check_circle</span>
+                      <div style="flex: 1;">
+                        <strong>Mandatory tag policy for <code>env</code> and <code>team</code></strong>
+                        <div style="font-size: 12px; color: var(--text-secondary);">94% resource coverage compliant with Org Policy</div>
+                      </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <span class="material-symbols-outlined" style="color: var(--google-yellow); font-size: 18px;">warning</span>
+                      <div style="flex: 1;">
+                        <strong>Unattached storage volume cleanup automation</strong>
+                        <div style="font-size: 12px; color: var(--text-secondary);">5 unattached disks currently accumulating charges</div>
+                      </div>
+                      <button class="btn-gcp btn-gcp-secondary btn-apply-quick-rec" data-rec-id="rec-2" style="height: 26px; padding: 0 8px; font-size: 11px;">Fix Now</button>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <span class="material-symbols-outlined" style="color: var(--google-yellow); font-size: 18px;">warning</span>
+                      <div style="flex: 1;">
+                        <strong>Committed Use Discount (CUD) coverage threshold</strong>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Current CUD coverage: 61% (Recommended target: 80%)</div>
+                      </div>
+                      <button class="btn-gcp btn-gcp-secondary btn-apply-quick-rec" data-rec-id="rec-3" style="height: 26px; padding: 0 8px; font-size: 11px;">Review</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- =========================================================
+               VIEW 2: COST BREAKDOWN BY SERVICE
+               ========================================================= -->
+          <section class="view-section" id="view-breakdown">
+            <div class="card-gcp">
+              <div class="card-gcp-header">
+                <div class="card-gcp-title">
+                  <span class="material-symbols-outlined" style="color: var(--google-blue);">table_view</span>
+                  <span>Google Cloud Services Breakdown</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="tableFilterInput" class="filter-select" placeholder="Filter services or SKUs..." style="width: 220px;" />
+                  <button class="btn-gcp btn-gcp-secondary" id="tableDownloadCsvBtn">
+                    <span class="material-symbols-outlined">download</span>
+                    <span>Download CSV</span>
+                  </button>
+                </div>
+              </div>
+              <div class="card-gcp-body" style="padding: 0;">
+                <div class="table-responsive">
+                  <table class="table-gcp" id="serviceBreakdownTable">
+                    <thead>
+                      <tr>
+                        <th class="sortable" data-col="service">Service <span class="material-symbols-outlined" style="font-size: 14px;">unfold_more</span></th>
+                        <th class="sortable" data-col="project">Project ID <span class="material-symbols-outlined" style="font-size: 14px;">unfold_more</span></th>
+                        <th>Primary Region</th>
+                        <th>Usage Amount</th>
+                        <th class="amount sortable" data-col="cost">Cost (USD) <span class="material-symbols-outlined" style="font-size: 14px;">unfold_more</span></th>
+                        <th class="amount">% Share</th>
+                        <th>Trend (30d)</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="serviceTableBody">
+                      <!-- Populated dynamically by app.js -->
+                    </tbody>
+                    <tfoot style="font-weight: 600; background-color: var(--bg-surface-variant);">
+                      <tr>
+                        <td colspan="4">Total</td>
+                        <td class="amount mono-cell" id="tableTotalCostCell">$12,450.00</td>
+                        <td class="amount">100.0%</td>
+                        <td colspan="2"></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Regional & Project Cost Breakdown Row -->
+            <div class="grid-equal-2col">
+              <div class="card-gcp">
+                <div class="card-gcp-header">
+                  <div class="card-gcp-title">
+                    <span class="material-symbols-outlined" style="color: var(--google-blue);">public</span>
+                    <span>Spend by Google Cloud Region</span>
+                  </div>
+                </div>
+                <div class="card-gcp-body">
+                  <div class="chart-container-box">
+                    <canvas id="regionCostChartCanvas"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-gcp">
+                <div class="card-gcp-header">
+                  <div class="card-gcp-title">
+                    <span class="material-symbols-outlined" style="color: var(--google-green);">folder</span>
+                    <span>Spend by Project</span>
+                  </div>
+                </div>
+                <div class="card-gcp-body">
+                  <div class="chart-container-box">
+                    <canvas id="projectCostChartCanvas"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- =========================================================
+               VIEW 3: RECOMMENDER HUB
+               ========================================================= -->
+          <section class="view-section" id="view-recommender">
+            <div class="card-gcp">
+              <div class="card-gcp-header">
+                <div class="card-gcp-title">
+                  <span class="material-symbols-outlined" style="color: var(--google-green);">savings</span>
+                  <span>Google Cloud Recommender Hub</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span style="font-size: 13px; color: var(--text-secondary);">Total Potential Savings:</span>
+                  <span class="status-pill success" style="font-size: 13px; font-weight: 700;" id="recommenderTotalSavingsBadge">+$2,180.50 / mo</span>
+                </div>
+              </div>
+              <div class="card-gcp-body">
+                
+                <!-- Filter Chips -->
+                <div class="recommender-filters">
+                  <div class="rec-category-chips">
+                    <button class="category-chip active" data-category="all">All Recommendations (12)</button>
+                    <button class="category-chip" data-category="rightsizing">Rightsizing (5)</button>
+                    <button class="category-chip" data-category="idle">Idle Resources (3)</button>
+                    <button class="category-chip" data-category="commitment">Commitments (CUD) (2)</button>
+                    <button class="category-chip" data-category="storage">Storage Optimization (2)</button>
+                  </div>
+
+                  <div style="margin-left: auto; display: flex; gap: 8px;">
+                    <select class="filter-select" id="recStatusFilter">
+                      <option value="all">Status: All</option>
+                      <option value="pending" selected>Status: Active / Pending</option>
+                      <option value="applied">Status: Applied</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Recommendations Card Grid -->
+                <div style="display: flex; flex-direction: column; gap: 12px;" id="recommendationsListContainer">
+                  <!-- Injected dynamically by app.js -->
+                </div>
+
+              </div>
+            </div>
+          </section>
+
+          <!-- =========================================================
+               VIEW 4: BUDGETS & ALERTS
+               ========================================================= -->
+          <section class="view-section" id="view-budgets">
+            <div class="grid-2col">
+              <div class="card-gcp">
+                <div class="card-gcp-header">
+                  <div class="card-gcp-title">
+                    <span class="material-symbols-outlined" style="color: var(--google-blue);">account_balance_wallet</span>
+                    <span>Active Budgets (August 2026)</span>
+                  </div>
+                  <button class="btn-gcp btn-gcp-primary" id="btnCreateBudget">
+                    <span class="material-symbols-outlined">add</span>
+                    <span>Create Budget</span>
+                  </button>
+                </div>
+                <div class="card-gcp-body" style="display: flex; flex-direction: column; gap: 20px;">
+                  
+                  <!-- Budget 1 -->
+                  <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                      <div>
+                        <div style="font-size: 15px; font-weight: 600;">Production Overall Budget</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Scope: Projects (htr-prod-service, htr-k8s-cluster)</div>
+                      </div>
+                      <span class="status-pill success">Under Target (83.0%)</span>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                      <span>Current Spend: <strong>$12,450.00</strong></span>
+                      <span>Target Budget: <strong>$15,000.00</strong></span>
+                    </div>
+
+                    <div class="kpi-progress" style="height: 10px;">
+                      <div class="kpi-progress-fill" style="width: 83%; background-color: var(--google-blue);"></div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-tertiary); margin-top: 6px;">
+                      <span>50% ($7,500) Triggered Aug 12</span>
+                      <span>80% ($12,000) Triggered Aug 23</span>
+                      <span>100% ($15,000) Safe</span>
+                    </div>
+                  </div>
+
+                  <!-- Budget 2 -->
+                  <div style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                      <div>
+                        <div style="font-size: 15px; font-weight: 600;">BigQuery Analytics Budget</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Scope: Project (htr-analytics-prod)</div>
+                      </div>
+                      <span class="status-pill success">Under Target (52.6%)</span>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                      <span>Current Spend: <strong>$1,580.00</strong></span>
+                      <span>Target Budget: <strong>$3,000.00</strong></span>
+                    </div>
+
+                    <div class="kpi-progress" style="height: 10px;">
+                      <div class="kpi-progress-fill" style="width: 52.6%; background-color: var(--google-green);"></div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-tertiary); margin-top: 6px;">
+                      <span>50% ($1,500) Triggered Aug 22</span>
+                      <span>80% ($2,400) Safe</span>
+                      <span>100% ($3,000) Safe</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Alert Channels -->
+              <div class="card-gcp">
+                <div class="card-gcp-header">
+                  <div class="card-gcp-title">
+                    <span class="material-symbols-outlined" style="color: var(--google-yellow);">notifications_active</span>
+                    <span>Alert Notifications</span>
+                  </div>
+                </div>
+                <div class="card-gcp-body" style="display: flex; flex-direction: column; gap: 14px;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--border-subtle);">
+                    <div>
+                      <div style="font-weight: 500;">Email Recipients</div>
+                      <div style="font-size: 12px; color: var(--text-secondary);">imedtra@google.com, finops-team@htr.com</div>
+                    </div>
+                    <span class="status-pill success">Active</span>
+                  </div>
+
+                  <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--border-subtle);">
+                    <div>
+                      <div style="font-weight: 500;">Slack #cloud-finops-alerts</div>
+                      <div style="font-size: 12px; color: var(--text-secondary);">Webhook configured for 80% & 100% spikes</div>
+                    </div>
+                    <span class="status-pill success">Connected</span>
+                  </div>
+
+                  <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                      <div style="font-weight: 500;">Pub/Sub Auto-Disabler</div>
+                      <div style="font-size: 12px; color: var(--text-secondary);">Auto-stops non-prod sandbox VMs at 100%</div>
+                    </div>
+                    <span class="status-pill info">Armed</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- =========================================================
+               VIEW 5: BIGQUERY SQL STUDIO
+               ========================================================= -->
+          <section class="view-section" id="view-bigquery">
+            <div class="card-gcp">
+              <div class="card-gcp-header">
+                <div class="card-gcp-title">
+                  <span class="material-symbols-outlined" style="color: var(--google-blue);">database</span>
+                  <span>BigQuery Cost & Usage SQL Studio</span>
+                </div>
+                <div class="sql-presets">
+                  <span style="font-size: 12px; color: var(--text-secondary);">Sample Queries:</span>
+                  <select class="filter-select" id="sqlPresetSelect">
+                    <option value="topServices">Top 10 Cost Drivers (30 Days)</option>
+                    <option value="idleDisks">Unattached Persistent Disks Cost</option>
+                    <option value="untaggedCost">Unallocated / Missing Label Costs</option>
+                    <option value="skuDaily">Daily SKU Usage Breakdown</option>
+                  </select>
+                </div>
+              </div>
+              <div class="card-gcp-body" style="padding: 0;">
+                <div class="sql-editor-container" style="border: none; border-radius: 0;">
+                  <textarea id="sqlQueryTextarea" class="sql-textarea" spellcheck="false"></textarea>
+                  <div class="sql-editor-footer">
+                    <div class="sql-status" id="sqlValidationStatus">
+                      <span class="material-symbols-outlined" style="font-size: 16px; color: var(--google-green);">check_circle</span>
+                      <span>Valid SQL. Query will process <strong>14.2 MB</strong> when run.</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                      <button class="btn-gcp btn-gcp-secondary" id="copySqlQueryBtn">
+                        <span class="material-symbols-outlined">content_copy</span>
+                        <span>Copy SQL</span>
+                      </button>
+                      <button class="btn-gcp btn-gcp-primary" id="runSqlQueryBtn">
+                        <span class="material-symbols-outlined">play_arrow</span>
+                        <span>Run Query</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Query Results Box -->
+                <div style="border-top: 1px solid var(--border-color); padding: 14px 18px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div style="font-size: 13px; font-weight: 500;" id="queryResultsHeader">
+                      Query Results (4 rows returned in 280ms)
+                    </div>
+                    <button class="btn-gcp btn-gcp-subtle" id="downloadQueryResultsBtn">
+                      <span class="material-symbols-outlined">download</span>
+                      <span>Export CSV</span>
+                    </button>
+                  </div>
+                  <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                    <table class="table-gcp" id="queryResultsTable">
+                      <!-- Results injected by app.js -->
+                    </table>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </section>
+
+          <!-- =========================================================
+               VIEW 6: GEMINI FINOPS COPILOT
+               ========================================================= -->
+          <section class="view-section" id="view-copilot">
+            <div class="gemini-panel">
+              <div class="gemini-panel-header">
+                <div class="gemini-title-brand">
+                  <span class="material-symbols-outlined gemini-sparkle-icon">auto_awesome</span>
+                  <span>Gemini Cloud FinOps Copilot</span>
+                  <span class="status-pill info">GCP Enterprise AI</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary);">
+                  Trained on Google Cloud Architecture Framework & FinOps Foundation
+                </div>
+              </div>
+
+              <!-- Chat Message Scroll Area -->
+              <div class="gemini-chat-scroll" id="geminiChatMessagesArea">
+                <!-- Greeting message -->
+                <div class="chat-bubble gemini">
+                  <p><strong>Hello imedtra!</strong> I am your Gemini Cloud FinOps Copilot.</p>
+                  <p>I have analyzed your billing export tables, resource inventories, and Google Cloud Recommender metrics for account <code>gcp-htr-prod-8841</code>. Here is what you should know today:</p>
+                  <ul style="margin-left: 18px; margin-top: 6px; margin-bottom: 6px;">
+                    <li>Your 30-day spend is <strong>$12,450.00</strong>, with <strong>$2,180.50/mo</strong> in potential savings.</li>
+                    <li>GKE Node Pool auto-scaling in <code>htr-k8s-cluster</code> is running at 18% CPU, which can save <strong>$820/mo</strong>.</li>
+                    <li>5 unattached standard SSD disks were detected in <code>htr-dev-service</code> (<strong>$310/mo</strong> waste).</li>
+                  </ul>
+                  <p>Ask me any question or click a prompt chip below to optimize further!</p>
+                </div>
+              </div>
+
+              <!-- Suggested Quick Chips -->
+              <div class="chat-quick-chips">
+                <button class="quick-chip-btn" data-prompt="What were the top 3 cost drivers this month?">💡 Top 3 cost drivers</button>
+                <button class="quick-chip-btn" data-prompt="How can I save money on our GKE clusters?">☸️ Optimize GKE cluster</button>
+                <button class="quick-chip-btn" data-prompt="Show me unattached disks and how to safely delete them">💾 Cleanup unattached disks</button>
+                <button class="quick-chip-btn" data-prompt="Estimate 3-year Committed Use Discount (CUD) savings">🤝 3-Yr CUD ROI</button>
+                <button class="quick-chip-btn" data-prompt="Write a BigQuery query to find untagged resources">📊 Find untagged resources</button>
+              </div>
+
+              <!-- Input bar -->
+              <div class="gemini-input-bar">
+                <input type="text" id="geminiChatInputField" class="gemini-input-field" placeholder="Ask Gemini anything about your cloud billing, architecture, or savings..." />
+                <button class="btn-gcp btn-gcp-primary" id="geminiSendBtn" style="border-radius: var(--radius-full); width: 38px; height: 38px; padding: 0; justify-content: center;">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">send</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- =========================================================
+               VIEW 7: SETTINGS & EXPORTS
+               ========================================================= -->
+          <section class="view-section" id="view-settings">
+            <div class="card-gcp">
+              <div class="card-gcp-header">
+                <div class="card-gcp-title">
+                  <span class="material-symbols-outlined" style="color: var(--google-blue);">settings</span>
+                  <span>FinOps Hub Configuration</span>
+                </div>
+              </div>
+              <div class="card-gcp-body">
+                <form id="settingsForm" style="max-width: 640px; display: flex; flex-direction: column; gap: 16px;">
+                  <div>
+                    <label style="display: block; font-weight: 500; margin-bottom: 4px;">BigQuery Detailed Billing Export Dataset</label>
+                    <input type="text" class="filter-select" style="width: 100%; height: 36px;" value="htr-billing-analytics.gcp_billing_export_v1" />
+                    <span style="font-size: 11px; color: var(--text-secondary);">Daily partitioned billing export table with resource tags and pricing tiers.</span>
+                  </div>
+
+                  <div>
+                    <label style="display: block; font-weight: 500; margin-bottom: 4px;">Monthly Budget Alert Limit (USD)</label>
+                    <input type="number" class="filter-select" style="width: 100%; height: 36px;" value="15000" />
+                    <span style="font-size: 11px; color: var(--text-secondary);">Triggers threshold alerts at 50%, 80%, and 100%.</span>
+                  </div>
+
+                  <div>
+                    <label style="display: block; font-weight: 500; margin-bottom: 4px;">Slack FinOps Webhook URL</label>
+                    <input type="text" class="filter-select" style="width: 100%; height: 36px;" value="https://hooks.slack.com/services/HTR/FINOPS/ALERTS_CH" />
+                  </div>
+
+                  <div>
+                    <label style="display: block; font-weight: 500; margin-bottom: 4px;">Currency</label>
+                    <select class="filter-select" style="width: 100%; height: 36px;">
+                      <option selected>USD ($) - United States Dollar</option>
+                      <option>EUR (€) - Euro</option>
+                      <option>GBP (£) - British Pound</option>
+                    </select>
+                  </div>
+
+                  <div style="margin-top: 10px; display: flex; gap: 10px;">
+                    <button type="button" class="btn-gcp btn-gcp-primary" id="saveSettingsBtn">Save Configuration</button>
+                    <button type="button" class="btn-gcp btn-gcp-secondary" id="resetDefaultsBtn">Reset to Defaults</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- =============================================================
+         Google Style Snackbar / Toast Notification
+         ============================================================= -->
+    <div class="snackbar" id="appSnackbar">
+      <span id="snackbarMessage">Recommendation applied successfully.</span>
+      <button class="snackbar-btn" id="snackbarActionBtn">UNDO</button>
+    </div>
+
+  </div>
+
+  <!-- Application Logic -->
+  <script src="app.js" defer></script>
+</body>
+</html>
