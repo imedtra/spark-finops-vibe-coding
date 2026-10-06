@@ -26,7 +26,7 @@ Built for **Google Cloud EMEA Customer Engineering (`@imedtra`)**, demonstrating
 ![Antigravity Engine vs Antigravity IDE](docs/assets/eco_slide_05.png)
 
 ### 3. 3-Presenter Animated Cartoon Avatar Video Preview (`google_ai_antigravity_avatar_animated.mp4`)
-| **Part 1 (`00:00–01:04`): Imed — AI Solutions Lead** | **Part 2 (`01:04–01:56`): Colleague #1 — AI & FinOps Specialist** | **Part 3 (`01:56–02:21`): Colleague #2 — Cloud Security Architect** |
+| **Part 1 (`00:00–01:04`): Imed — AI Solutions Lead** | **Part 2 (`01:04–01:56`): Colleague #1 Cartoon Avatar (Hasnae - Technical Account Manager) • Female Voice** | **Part 3 (`01:56–02:21`): Colleague #2 Cartoon Avatar (Dr Nabil Outcome Customer Engineer • Male Voice #2)** |
 | :---: | :---: | :---: |
 | ![Part 1 — Imed](docs/assets/qa_part1_imed.jpg) | ![Part 2 — Colleague 1](docs/assets/qa_part2_colleague1.jpg) | ![Part 3 — Colleague 2](docs/assets/qa_part3_colleague2.jpg) |
 
