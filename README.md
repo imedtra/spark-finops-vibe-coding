@@ -83,6 +83,7 @@ flowchart TD
 
 ## 📚 Workshop Playbook, Decks & Documentation (`docs/`)
 
+* **[`docs/EXECUTIVE_ONE_PAGER.md`](docs/EXECUTIVE_ONE_PAGER.md)** — Executive One-Pager & 10x Scalability Case ([Google Doc](https://docs.google.com/document/d/1Gt6gUvro8V3IcmoU4KQmCIxsrF-qP858gDO30oKzxJc/edit) • [8-Slide Executive Deck](https://docs.google.com/presentation/d/1WjajCh-JcooBmwWar9AokmbBICTvSDZYsLv2O7TI1UY/edit) • [Drive Folder](https://drive.google.com/drive/folders/1f2YN5RzAP0vwq510hiNxnMyb3Bp6sCIc)).
 * **[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)** — Full 5-Layer System & Zero-Trust Cloud Architecture, Execution Sequence Diagram, Resource Specifications, REST API Contracts, Defense-in-Depth Security Matrix (`WAF-1000`, `WAF-1100`, `WAF-5000`, `SEC-01`–`SEC-05`), and `go/genarch` Schema.
 * **[`docs/vibe_coding_finops_workshop_playbook.md`](docs/vibe_coding_finops_workshop_playbook.md)** — Complete 3-Hour (4-Sprint) Antigravity Vibe Coding Master Workshop Syllabus, 22-Slide Presenter Script, Copy-Paste Prompts, and Instructor Troubleshooting Cheat Sheet.
 * **[`docs/attendee_quickstart_handout.md`](docs/attendee_quickstart_handout.md)** — Attendee Quickstart Handout with the 4 sequential Vibe Coding prompts + Sprint 5 Zero-Trust Cloud Run & Cloud Armor deployment prompt.
